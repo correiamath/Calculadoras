@@ -1,17 +1,18 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Desconto 7% SN Bahia</title>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Desconto 7% SN Bahia</title>
 
-<style>
-    * {
+    <style>
+      * {
         box-sizing: border-box;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    }
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+          Helvetica, Arial, sans-serif;
+      }
 
-    body {
+      body {
         margin: 0;
         background: #f2f2f7;
         min-height: 100vh;
@@ -19,32 +20,32 @@
         justify-content: center;
         align-items: center;
         padding: 20px;
-    }
+      }
 
-    .container {
+      .container {
         width: 100%;
         max-width: 420px;
         background: #ffffff;
         border-radius: 20px;
         padding: 24px;
-        box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    }
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+      }
 
-    h1 {
+      h1 {
         text-align: center;
         font-size: 22px;
         margin-bottom: 20px;
         color: #111;
-    }
+      }
 
-    label {
+      label {
         font-size: 15px;
         color: #555;
         margin-bottom: 8px;
         display: block;
-    }
+      }
 
-    input {
+      input {
         width: 100%;
         padding: 16px;
         font-size: 20px;
@@ -53,14 +54,14 @@
         background: #fafafa;
         outline: none;
         transition: 0.2s;
-    }
+      }
 
-    input:focus {
+      input:focus {
         border-color: #007aff;
         background: #fff;
-    }
+      }
 
-    .resultado {
+      .resultado {
         margin-top: 24px;
         background: #f2f2f7;
         border-radius: 14px;
@@ -68,75 +69,93 @@
         font-size: 15px;
         line-height: 1.6;
         color: #222;
-    }
+      }
 
-    .linha {
+      .linha {
         margin-bottom: 12px;
-    }
+      }
 
-    .titulo {
+      .titulo {
         font-size: 13px;
         color: #666;
-    }
+      }
 
-    .valor {
+      .valor {
         font-size: 18px;
         font-weight: 600;
         color: #000;
-    }
-</style>
-</head>
+      }
+    </style>
+  </head>
 
-<body>
+  <body>
+    <div class="container">
+      <h1>Desconto 7% SN Bahia</h1>
 
-<div class="container">
-    <h1>Desconto 7% SN Bahia</h1>
-
-    <label>Valor da mercadoria:</label>
-    <input
+      <label>Valor da mercadoria:</label>
+      <input
         type="text"
-        placeholder="Ex: 100,00"
-        oninput="calcular(this.value)"
-    >
+        placeholder="Ex: 1.000,00"
+        oninput="mascaraMoeda(this)"
+      />
 
-    <div class="resultado" id="resultado">
+      <div class="resultado" id="resultado">
         Digite um valor para visualizar o cálculo.
+      </div>
     </div>
-</div>
 
-<script>
-function formatarMoeda(valor) {
-    return valor.toLocaleString('pt-BR', {
-        style: 'currency',
-        currency: 'BRL'
-    });
-}
+    <script>
+      function mascaraMoeda(input) {
+        let valor = input.value;
 
-function calcular(valorDigitado) {
-    if (!valorDigitado) {
-        document.getElementById("resultado").innerHTML =
+        // Remove tudo que não for número ou vírgula
+        valor = valor.replace(/[^\d,]/g, "");
+
+        // Guarda se o usuário digitou vírgula
+        const temVirgula = valor.includes(",");
+
+        const partes = valor.split(",");
+        let inteiro = partes[0];
+        let decimal = partes[1] || "";
+
+        // Limita decimal a 2 casas
+        decimal = decimal.substring(0, 2);
+
+        // Aplica separador de milhar
+        inteiro = inteiro.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+
+        // Reconstrói mantendo a vírgula se ela foi digitada
+        if (temVirgula) {
+          input.value = `${inteiro},${decimal}`;
+        } else {
+          input.value = inteiro;
+        }
+
+        calcular(input.value);
+      }
+
+      function calcular(valorFormatado) {
+        if (!valorFormatado || valorFormatado === ",") {
+          document.getElementById("resultado").innerHTML =
             "Digite um valor para visualizar o cálculo.";
-        return;
-    }
+          return;
+        }
 
-    // Normaliza entrada (vírgula ou ponto)
-    let valor = valorDigitado
-        .replace(/\./g, '')
-        .replace(',', '.');
+        let valor = valorFormatado.replace(/\./g, "").replace(",", ".");
 
-    valor = parseFloat(valor);
+        valor = parseFloat(valor);
 
-    if (isNaN(valor) || valor <= 0) {
-        document.getElementById("resultado").innerHTML =
+        if (isNaN(valor) || valor <= 0) {
+          document.getElementById("resultado").innerHTML =
             "Digite um valor válido.";
-        return;
-    }
+          return;
+        }
 
-    const baseSN = valor / 0.93;
-    const baseICMS = valor / 0.795;
-    const diferenca = baseICMS - baseSN;
+        const baseSN = valor / 0.93;
+        const baseICMS = valor / 0.795;
+        const diferenca = baseICMS - baseSN;
 
-    document.getElementById("resultado").innerHTML = `
+        document.getElementById("resultado").innerHTML = `
         <div class="linha">
             <div class="titulo">
                 Base bruta antes do desconto do Simples Nacional (7%)
@@ -164,8 +183,14 @@ function calcular(valorDigitado) {
             </div>
         </div>
     `;
-}
-</script>
+      }
 
-</body>
+      function formatarMoeda(valor) {
+        return valor.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
+        });
+      }
+    </script>
+  </body>
 </html>
