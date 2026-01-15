@@ -93,7 +93,11 @@
     <h1>Desconto 7% SN Bahia</h1>
 
     <label>Valor da mercadoria:</label>
-    <input type="number" step="0.01" placeholder="Ex: 100,00" oninput="calcular(this.value)">
+    <input
+        type="text"
+        placeholder="Ex: 100,00"
+        oninput="calcular(this.value)"
+    >
 
     <div class="resultado" id="resultado">
         Digite um valor para visualizar o cálculo.
@@ -101,12 +105,30 @@
 </div>
 
 <script>
-function calcular(valor) {
+function formatarMoeda(valor) {
+    return valor.toLocaleString('pt-BR', {
+        style: 'currency',
+        currency: 'BRL'
+    });
+}
+
+function calcular(valorDigitado) {
+    if (!valorDigitado) {
+        document.getElementById("resultado").innerHTML =
+            "Digite um valor para visualizar o cálculo.";
+        return;
+    }
+
+    // Normaliza entrada (vírgula ou ponto)
+    let valor = valorDigitado
+        .replace(/\./g, '')
+        .replace(',', '.');
+
     valor = parseFloat(valor);
 
     if (isNaN(valor) || valor <= 0) {
         document.getElementById("resultado").innerHTML =
-            "Digite um valor para visualizar o cálculo.";
+            "Digite um valor válido.";
         return;
     }
 
@@ -116,18 +138,30 @@ function calcular(valor) {
 
     document.getElementById("resultado").innerHTML = `
         <div class="linha">
-            <div class="titulo">Base bruta antes do desconto do Simples Nacional (7%)</div>
-            <div class="valor">R$ ${baseSN.toFixed(2)}</div>
+            <div class="titulo">
+                Base bruta antes do desconto do Simples Nacional (7%)
+            </div>
+            <div class="valor">
+                ${formatarMoeda(baseSN)}
+            </div>
         </div>
 
         <div class="linha">
-            <div class="titulo">Base de cálculo do ICMS (20,5%)</div>
-            <div class="valor">R$ ${baseICMS.toFixed(2)}</div>
+            <div class="titulo">
+                Base de cálculo do ICMS (20,5%)
+            </div>
+            <div class="valor">
+                ${formatarMoeda(baseICMS)}
+            </div>
         </div>
 
         <div class="linha">
-            <div class="titulo">Diferença entre as bases tributárias</div>
-            <div class="valor">R$ ${diferenca.toFixed(2)}</div>
+            <div class="titulo">
+                Diferença entre as bases tributárias
+            </div>
+            <div class="valor">
+                ${formatarMoeda(diferenca)}
+            </div>
         </div>
     `;
 }
